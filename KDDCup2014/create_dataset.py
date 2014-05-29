@@ -9,10 +9,10 @@ def hbucket(s):
     return int(m.hexdigest(),16)%1000
 
 def main(cutoff='2014-01-01'):
-    projects = pandas.read_csv('data/projects.csv')
-    outcomes = pandas.read_csv('data/outcomes.csv')
-    resources = pandas.read_csv('data/resources.csv')
-    essay = pandas.read_csv('data/essays.csv',quotechar='"')
+    projects = pandas.read_csv('data/dataset/projects.csv')
+    outcomes = pandas.read_csv('data/dataset/outcomes.csv')
+    resources = pandas.read_csv('data/dataset/resources.csv')
+    essay = pandas.read_csv('data/dataset/essays.csv',quotechar='"')
     
     resources['total_amount'] = resources['item_unit_price']*resources['item_quantity']
     
@@ -21,8 +21,7 @@ def main(cutoff='2014-01-01'):
 
     proj_outc = projects.merge(outcomes, on='projectid', how='left') 
     proj_outc_reso = proj_outc.merge(resources_col, on='projectid', how='left') 
-    dataset = proj_outc_reso.merge(essay[['projectid','teacher_acctid','title','short_description','need_statement']],\
-            on=['projectid','teacher_acctid'], how='inner') 
+    dataset = proj_outc_reso.merge(essay, on=['projectid','teacher_acctid'], how='inner') 
     
     print outcomes.shape, projects.shape, dataset.shape
     

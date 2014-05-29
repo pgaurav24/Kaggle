@@ -30,9 +30,12 @@ feature_names = [ 'school_metro_b',\
                   'eligible_double_your_impact_match',\
                   'eligible_almost_home_match',\
                   'students_reached_b',\
-                  'total_amount_b']
+                  'total_amount_b',\
+                  'essay_length']
  
-features_numeric = ['total_price_excluding_optional_support', 'total_price_including_optional_support'] 
+features_numeric = ['total_price_excluding_optional_support',\
+                    'total_price_including_optional_support',\
+                    'essay_length'] 
 
 
 full_train_file = 'data/train.csv'
@@ -94,5 +97,5 @@ df_pred = pandas.DataFrame(index=probe.index)
 df_probs = pandas.Series(data=probe_probs[:,1], index=df_pred.index, name='is_exciting')
 df_pred = df_pred.join(probe.projectid)
 df_pred = df_pred.join(df_probs)
-df_pred.to_csv('data/submissions_2.csv',index=False) 
+df_pred.to_csv('data/submissions_3.csv',index=False) 
 

@@ -35,7 +35,11 @@ def students_reached_b(data):
 def total_amount_b(data):
     df = pandas.Series(pandas.qcut(data.total_amount, 5), index=data.index, name='total_amount_b') 
     return df.fillna('#NA')
-    
+
+def essay_length(data):
+    data['essay'].fillna('#NA',inplace=True)
+    return data['essay'].apply(len)
+
 def extract_features(feature_names, data):
     feat = pandas.DataFrame(index=data.index)
     for fname in feature_names:
@@ -70,8 +74,9 @@ if __name__ == "__main__":
                   'eligible_double_your_impact_match',\
                   'eligible_almost_home_match',\
                   'students_reached_b',\
-                  'total_amount_b']
+                  'total_amount_b',\
+                  'essay_length']
  
-    data = pandas.read_csv('data/test.csv', quotechar='"')
+    data = pandas.read_csv('data/train-A.csv', quotechar='"')
     features = extract_features(feature_names, data)
     features.to_csv('data/features.csv',index=False,quoting=csv.QUOTE_ALL) 
