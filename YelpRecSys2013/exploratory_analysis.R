@@ -43,8 +43,18 @@ checkin <- subset(yelp.data, select=features.checkin)
 colnames(checkin) <- c('sun','mon','tue','wed','thu','fri','sat')
 m.checkin <- melt(checkin)
 mm <- ddply(m.checkin, .(variable), summarise, avg.checkin=mean(value, na.rm=T)) 
-ggplot(data=mm, aes(x=factor(variable), y=avg.checkin)) + geom_bar()
+ggplot(data=mm, aes(x=factor(variable), y=avg.checkin)) + geom_bar(stat="identity")
 
+features <- c(features.user, features.business, features.checkin)
+c.list <- list()
+for (uu in features) {
+  if (uu == 'business_open')
+    next
+  c.list[[uu]] <- cor(x=yelp.data$review_stars, y=yelp.data[[uu]], use="pairwise.complete.obs", method="pearson")
+}
+uu <- melt(as.data.frame(c.list))
+ggplot(data=uu, aes(x=factor(variable), y=value)) + geom_bar(stat="identity") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
-
+#table(yelp.data$business_open, yelp.data$review_stars)
 
