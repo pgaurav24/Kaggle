@@ -7,7 +7,7 @@ import preprocess_data
 traindir = '/Users/prashant/workspace/Kaggle/YelpRecSys2013/data/yelp_training_set'
 testdir  = '/Users/prashant/workspace/Kaggle/YelpRecSys2013/data/yelp_test_set'
 
-user_header = [ 'type',\
+user_header = [ #'type',\
                 'user_id',\
                 'review_count',\
                 'average_stars',\
@@ -15,10 +15,10 @@ user_header = [ 'type',\
                 'votes_funny',\
                 'votes_cool']
     
-business_header = [ 'type',\
+business_header = [ #'type',\
                     'business_id',\
                     'name',\
-                    'neighborhoods',\
+                    #'neighborhoods',\
                     'full_address',\
                     'city',\
                     'state',\
@@ -29,17 +29,17 @@ business_header = [ 'type',\
                     'categories',\
                     'open']
 
-review_header = [   'type',\
+review_header = [   #'type',\
                     'business_id',\
                     'user_id',\
                     'stars',\
-                    'text',\
+                    #'text',\
                     'date',\
                     'votes_useful',\
                     'votes_funny',\
                     'votes_cool']
 
-checkin_header = [ 'type',\
+checkin_header = [ #'type',\
                    'business_id',\
                    'checkin_count_sun',\
                    'checkin_count_mon',\
@@ -51,7 +51,7 @@ checkin_header = [ 'type',\
 
 
 def yelp_user(jrec):
-    record = [  jrec.get('type'),\
+    record = [  #jrec.get('type'),\
                 jrec.get('user_id'),\
                 jrec.get('review_count'),\
                 jrec.get('average_stars'),\
@@ -62,10 +62,12 @@ def yelp_user(jrec):
     return record
 
 def yelp_business(jrec):
-    record = [  jrec.get('type'),\
+    categories = [ss.encode('utf-8') for ss in jrec.get('categories')]
+
+    record = [  #jrec.get('type'),\
                 jrec.get('business_id'),\
                 jrec.get('name').encode('utf-8').replace('\n', ' '),\
-                jrec.get('neighborhoods'),\
+                #jrec.get('neighborhoods'),\
                 jrec.get('full_address').encode('utf-8').replace('\n', ' '),\
                 jrec.get('city'),\
                 jrec.get('state'),\
@@ -73,17 +75,17 @@ def yelp_business(jrec):
                 jrec.get('longitude'),\
                 jrec.get('stars'),\
                 jrec.get('review_count'),\
-                jrec.get('categories'),\
+                '|'.join(categories),\
                 jrec.get('open')]
     
     return record
 
 def yelp_review(jrec):
-    record = [  jrec.get('type'),\
+    record = [  #jrec.get('type'),\
                 jrec.get('business_id'),\
                 jrec.get('user_id'),\
                 jrec.get('stars'),\
-                jrec.get('text').encode('utf-8').replace('\n', ' ').replace('\r',' '),\
+                #jrec.get('text').encode('utf-8').replace('\n', ' ').replace('\r',' '),\
                 jrec.get('date'),\
                 jrec.get('votes').get('useful'),\
                 jrec.get('votes').get('funny'),\
@@ -100,7 +102,8 @@ def yelp_checkin(jrec):
         assert(dayofweek >= 0 and dayofweek <=6),"dayofweek out of range"
         checkin_count[dayofweek] = checkin_count[dayofweek] + checkin          
 
-   record = [  jrec.get('type'), jrec.get('business_id')]
+   #record = [ jrec.get('type'), jrec.get('business_id')]
+   record = [ jrec.get('business_id')]
    record.extend(checkin_count.tolist())
     
    return record 
@@ -129,10 +132,10 @@ def convert_json_to_csv(jsonfilename, entity, header):
             raise
 
 def main():
-    convert_json_to_csv('yelp_training_set_user.json', 'yelp_user', user_header)
+    #convert_json_to_csv('yelp_training_set_user.json', 'yelp_user', user_header)
     convert_json_to_csv('yelp_training_set_business.json', 'yelp_business', business_header)
-    convert_json_to_csv('yelp_training_set_review.json', 'yelp_review', review_header)
-    convert_json_to_csv('yelp_training_set_checkin.json', 'yelp_checkin', checkin_header)
+    #convert_json_to_csv('yelp_training_set_review.json', 'yelp_review', review_header)
+    #convert_json_to_csv('yelp_training_set_checkin.json', 'yelp_checkin', checkin_header)
    
 if __name__ == "__main__":
     main()
