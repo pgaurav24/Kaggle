@@ -9,35 +9,35 @@ testdir  = '/Users/prashant/workspace/Kaggle/YelpRecSys2013/data/yelp_test_set'
 
 user_header = [ #'type',\
                 'user_id',\
-                'review_count',\
-                'average_stars',\
-                'votes_useful',\
-                'votes_funny',\
-                'votes_cool']
+                'user_review_count',\
+                'user_average_stars',\
+                'user_votes_useful',\
+                'user_votes_funny',\
+                'user_votes_cool']
     
 business_header = [ #'type',\
                     'business_id',\
-                    'name',\
+                    'business_name',\
                     #'neighborhoods',\
-                    'full_address',\
+                    #'full_address',\
                     'city',\
                     'state',\
                     'latitude',\
                     'longitude',\
-                    'stars',\
-                    'review_count',\
+                    'business_stars',\
+                    'business_review_count',\
                     'categories',\
-                    'open']
+                    'business_open']
 
 review_header = [   #'type',\
                     'business_id',\
                     'user_id',\
-                    'stars',\
+                    'review_stars',\
                     #'text',\
-                    'date',\
-                    'votes_useful',\
-                    'votes_funny',\
-                    'votes_cool']
+                    'review_date',\
+                    'review_votes_useful',\
+                    'review_votes_funny',\
+                    'review_votes_cool']
 
 checkin_header = [ #'type',\
                    'business_id',\
@@ -68,7 +68,7 @@ def yelp_business(jrec):
                 jrec.get('business_id'),\
                 jrec.get('name').encode('utf-8').replace('\n', ' '),\
                 #jrec.get('neighborhoods'),\
-                jrec.get('full_address').encode('utf-8').replace('\n', ' '),\
+                #jrec.get('full_address').encode('utf-8').replace('\n', ' '),\
                 jrec.get('city'),\
                 jrec.get('state'),\
                 jrec.get('latitude'),\
@@ -132,10 +132,10 @@ def convert_json_to_csv(jsonfilename, entity, header):
             raise
 
 def main():
-    #convert_json_to_csv('yelp_training_set_user.json', 'yelp_user', user_header)
+    convert_json_to_csv('yelp_training_set_user.json', 'yelp_user', user_header)
     convert_json_to_csv('yelp_training_set_business.json', 'yelp_business', business_header)
-    #convert_json_to_csv('yelp_training_set_review.json', 'yelp_review', review_header)
-    #convert_json_to_csv('yelp_training_set_checkin.json', 'yelp_checkin', checkin_header)
+    convert_json_to_csv('yelp_training_set_review.json', 'yelp_review', review_header)
+    convert_json_to_csv('yelp_training_set_checkin.json', 'yelp_checkin', checkin_header)
    
 if __name__ == "__main__":
     main()
