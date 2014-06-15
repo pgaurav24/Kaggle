@@ -8,7 +8,7 @@ def hbucket(s):
     m.update(s)
     return int(m.hexdigest(),16)%1000
 
-def main(infile='train.csv',cutoff=700):
+def main(infile='data/train.csv',cutoff=700):
     train_data = pandas.read_csv(infile,quotechar='"')
     train_data['bucketid'] = train_data['projectid'].apply(hbucket) 
     train_data.sort_index(by='bucketid')
