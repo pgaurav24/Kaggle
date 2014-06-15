@@ -2,6 +2,7 @@ rm(list=ls())
 
 library(plyr)
 library(ggplot2)
+library(reshape)
 
 train.dir <- '/Users/prashant/workspace/Kaggle/YelpRecSys2013/data/yelp_training_set/'
 yelp.data <- read.csv(file=paste(train.dir, 'yelp_training_set.csv', sep=""), quote='\"', header=TRUE)
@@ -52,9 +53,17 @@ for (uu in features) {
     next
   c.list[[uu]] <- cor(x=yelp.data$review_stars, y=yelp.data[[uu]], use="pairwise.complete.obs", method="pearson")
 }
+
 uu <- melt(as.data.frame(c.list))
 ggplot(data=uu, aes(x=factor(variable), y=value)) + geom_bar(stat="identity") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 #table(yelp.data$business_open, yelp.data$review_stars)
+
+per.business <-  ddply(yelp.data, .(business_id), summarize, nr=length(business_id), mr=mean(review_stars))
+ggplot(data=per.business, aes(x=mr)) + 
+  geom_histogram(binwidth=0.1, colour="black", fill="white")
+ggplot(data=per.business, aes(x=nr)) + 
+  geom_histogram(binwidth=10, colour="black", fill="white") + scale_x_continuous(limits=c(0, 250))
+
 
