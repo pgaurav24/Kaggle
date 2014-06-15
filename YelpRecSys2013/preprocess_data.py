@@ -1,9 +1,12 @@
 import json
 import os
 import csv
+import numpy
 import preprocess_data
 
 traindir = '/Users/prashant/workspace/Kaggle/YelpRecSys2013/data/yelp_training_set'
+testdir  = '/Users/prashant/workspace/Kaggle/YelpRecSys2013/data/yelp_test_set'
+
 user_header = [ 'type',\
                 'user_id',\
                 'review_count',\
@@ -11,7 +14,7 @@ user_header = [ 'type',\
                 'votes_useful',\
                 'votes_funny',\
                 'votes_cool']
-
+    
 business_header = [ 'type',\
                     'business_id',\
                     'name',\
@@ -36,50 +39,71 @@ review_header = [   'type',\
                     'votes_funny',\
                     'votes_cool']
 
+checkin_header = [ 'type',\
+                   'business_id',\
+                   'checkin_count_sun',\
+                   'checkin_count_mon',\
+                   'checkin_count_tue',\
+                   'checkin_count_wed',\
+                   'checkin_count_thu',\
+                   'checkin_count_fri',\
+                   'checkin_count_sat']
 
-def yelp_user(jrecord):
-    record = [  jrecord.get('type'),\
-                jrecord.get('user_id'),\
-                jrecord.get('review_count'),\
-                jrecord.get('average_stars'),\
-                jrecord.get('votes').get('useful'),\
-                jrecord.get('votes').get('funny'),\
-                jrecord.get('votes').get('cool') ]
+
+def yelp_user(jrec):
+    record = [  jrec.get('type'),\
+                jrec.get('user_id'),\
+                jrec.get('review_count'),\
+                jrec.get('average_stars'),\
+                jrec.get('votes').get('useful'),\
+                jrec.get('votes').get('funny'),\
+                jrec.get('votes').get('cool') ]
     
     return record
 
-def yelp_business(jrecord):
-    record = [  jrecord.get('type'),\
-                jrecord.get('business_id'),\
-                jrecord.get('name').encode('utf-8').replace('\n', ' '),\
-                jrecord.get('neighborhoods'),\
-                jrecord.get('full_address').encode('utf-8').replace('\n', ' '),\
-                jrecord.get('city'),\
-                jrecord.get('state'),\
-                jrecord.get('latitude'),\
-                jrecord.get('stars'),\
-                jrecord.get('review_count'),\
-                jrecord.get('categories'),\
-                jrecord.get('open')]
+def yelp_business(jrec):
+    record = [  jrec.get('type'),\
+                jrec.get('business_id'),\
+                jrec.get('name').encode('utf-8').replace('\n', ' '),\
+                jrec.get('neighborhoods'),\
+                jrec.get('full_address').encode('utf-8').replace('\n', ' '),\
+                jrec.get('city'),\
+                jrec.get('state'),\
+                jrec.get('latitude'),\
+                jrec.get('longitude'),\
+                jrec.get('stars'),\
+                jrec.get('review_count'),\
+                jrec.get('categories'),\
+                jrec.get('open')]
     
     return record
 
-def yelp_review(jrecord):
-    record = [  jrecord.get('type'),\
-                jrecord.get('business_id'),\
-                jrecord.get('user_id'),\
-                jrecord.get('stars'),\
-                jrecord.get('text').encode('utf-8').replace('\n', ' '),\
-                jrecord.get('date'),\
-                jrecord.get('votes').get('useful'),\
-                jrecord.get('votes').get('funny'),\
-                jrecord.get('votes').get('cool') ]
+def yelp_review(jrec):
+    record = [  jrec.get('type'),\
+                jrec.get('business_id'),\
+                jrec.get('user_id'),\
+                jrec.get('stars'),\
+                jrec.get('text').encode('utf-8').replace('\n', ' ').replace('\r',' '),\
+                jrec.get('date'),\
+                jrec.get('votes').get('useful'),\
+                jrec.get('votes').get('funny'),\
+                jrec.get('votes').get('cool') ]
     
     return record
 
-def yelp_checkin(jrecord):
-    record = [  jrecord.get('type'),\
-                jrecord.get('business_id')]
+def yelp_checkin(jrec):
+   checkin_info = jrec.get('checkin_info')
+   checkin_count = numpy.zeros(7, dtype=numpy.int)
+
+   for hh_dd, checkin in checkin_info.iteritems():
+        dayofweek = int(hh_dd.split('-')[1])
+        assert(dayofweek >= 0 and dayofweek <=6),"dayofweek out of range"
+        checkin_count[dayofweek] = checkin_count[dayofweek] + checkin          
+
+   record = [  jrec.get('type'), jrec.get('business_id')]
+   record.extend(checkin_count.tolist())
+    
+   return record 
 
 def convert_json_to_csv(jsonfilename, entity, header):
     jsonfilepath = os.path.join(traindir,jsonfilename)
@@ -96,18 +120,19 @@ def convert_json_to_csv(jsonfilename, entity, header):
     writer.writerow(header)
 
     for line in lines:
-        jrecord = json.loads(line)
-        record  = getattr(preprocess_data, entity)(jrecord)
+        jrec = json.loads(line)
+        record  = getattr(preprocess_data, entity)(jrec)
         try:
             writer.writerow(record)
         except UnicodeEncodeError:
-            print jrecord
+            print 'Error reading : '+ jrec
             raise
 
 def main():
     convert_json_to_csv('yelp_training_set_user.json', 'yelp_user', user_header)
     convert_json_to_csv('yelp_training_set_business.json', 'yelp_business', business_header)
     convert_json_to_csv('yelp_training_set_review.json', 'yelp_review', review_header)
+    convert_json_to_csv('yelp_training_set_checkin.json', 'yelp_checkin', checkin_header)
    
 if __name__ == "__main__":
     main()
