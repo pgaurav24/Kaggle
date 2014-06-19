@@ -8,44 +8,77 @@ import extract_table as tt
 
 categories = pandas.read_csv(os.path.join(tt.traindir, 'yelp_business_categories.csv'))
 
-feature_names = [ 'user_review_count',\
-                  'user_average_stars',\
-                  'user_votes_useful',\
-                  'user_votes_funny',\
-                  'user_votes_cool',\
+feature_names = [ 'user_review_count_ff',\
+                  'user_average_stars_ff',\
+                  'user_votes_useful_ff',\
+                  'user_votes_funny_ff',\
+                  'user_votes_cool_ff',\
                   'business_latitude',\
                   'business_longitude',\
                   'business_stars',\
-                  'business_review_count',\
                   'business_categories_features',\
+                  'business_review_count',\
                   'business_open',\
-                  'checkin_count_sun',\
-                  'checkin_count_mon',\
-                  'checkin_count_tue',\
-                  'checkin_count_wed',\
-                  'checkin_count_thu',\
-                  'checkin_count_fri',\
-                  'checkin_count_sat',\
+                  'checkin_count_sun_ff',\
+                  'checkin_count_mon_ff',\
+                  'checkin_count_tue_ff',\
+                  'checkin_count_wed_ff',\
+                  'checkin_count_thu_ff',\
+                  'checkin_count_fri_ff',\
+                  'checkin_count_sat_ff',\
                   'review_stars',\
                   'review_text_len']
 
-def review_text_len(data):
-    df = data['review_text'].apply(lambda x: len(str(x)) )
-    df.name = 'review_text_len'
+def user_review_count_ff(data):
+    return data['user_review_count'].fillna(0)
 
-    return df
+def user_average_stars_ff(data):
+    return data['user_average_stars'].fillna(0)
+
+def user_votes_useful_ff(data):
+    return data['user_votes_useful'].fillna(0)
+
+def user_votes_funny_ff(data):
+    return data['user_votes_funny'].fillna(0)
+
+def user_votes_cool_ff(data):
+    return data['user_votes_cool'].fillna(0)
+
+def checkin_count_sun_ff(data):
+    return data['checkin_count_sun'].fillna(0)
+
+def checkin_count_mon_ff(data):
+    return data['checkin_count_mon'].fillna(0)
+
+def checkin_count_tue_ff(data):
+    return data['checkin_count_tue'].fillna(0)
+
+def checkin_count_wed_ff(data):
+    return data['checkin_count_wed'].fillna(0)
+
+def checkin_count_thu_ff(data):
+    return data['checkin_count_thu'].fillna(0)
+
+def checkin_count_fri_ff(data):
+    return data['checkin_count_fri'].fillna(0)
+
+def checkin_count_sat_ff(data):
+    return data['checkin_count_sat'].fillna(0)
+
+def review_text_len(data):
+    out = data['review_text'].apply(lambda x: len(str(x)) )
+    out.name = 'review_text_len'
+    return out
     
 def business_categories_features(data):
     out = pandas.DataFrame(index=data.index)
     for category in categories.category.tolist():
-        ff = data.business_categories.apply(lambda cc: False if pandas.isnull(cc) else (category in cc.split('|')) )
+        ff = data.business_categories.apply(lambda cc: 0 if pandas.isnull(cc) else (category in cc.split('|'))*1 )
         ff.name = re.sub(r'[^a-zA-Z0-9\[\]]', "_", category).lower()
         out = out.join(ff) 
-    
     return out
 
-# TODO
-# add review text features
+# TODO: add review text features
 
 def extract_features(data):
     feat = pandas.DataFrame(index=data.index)
@@ -59,6 +92,6 @@ def extract_features(data):
     return feat
 
 if __name__ == "__main__":
-    data = pandas.read_csv('data/yelp_training_set/yelp_training_set.csv', quotechar='"')
+    data = pandas.read_csv('data/yelp_training_set/yelp_training_tryset.csv', quotechar='"')
     features = extract_features(data)
     features.to_csv('data/yelp_training_set/yelp_training_features.csv',index=False,quoting=csv.QUOTE_NONNUMERIC)

@@ -25,17 +25,8 @@ print len(categories)
 
 categories_filepath = os.path.join(tt.traindir, 'yelp_business_categories.csv')
 categories = pandas.DataFrame(categories, columns=['category'])
-#categories['category'] = categories['category'].apply(lambda x: re.sub(r'[^a-zA-Z0-9\[\]]', "_", x).lower())
 categories.to_csv(categories_filepath,index=False)
-
-rows = random.sample(dataset.index, int(0.7*dataset.shape[0]))
-yelp_training_set = dataset.ix[rows]
-yelp_validation_set = dataset.drop(rows)
 
 training_filepath = os.path.join(tt.traindir, 'yelp_training_set.csv')
 print 'writing training dataset to '+ training_filepath
-yelp_training_set.to_csv(training_filepath,index=False,quoting=csv.QUOTE_NONNUMERIC)
-
-validation_filepath = os.path.join(tt.traindir, 'yelp_validation_set.csv')
-print 'writing validation dataset to '+ validation_filepath
-yelp_validation_set.to_csv(validation_filepath,index=False,quoting=csv.QUOTE_NONNUMERIC)
+dataset.to_csv(training_filepath,index=False,quoting=csv.QUOTE_NONNUMERIC)
